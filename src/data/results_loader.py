@@ -1,5 +1,7 @@
 from fastf1.ergast import Ergast
 import pandas as pd
+import time
+import os
 
 
 def get_season_results(year):
@@ -15,6 +17,7 @@ def get_season_results(year):
     response = ergast.get_race_results(season=year)
 
     all_races = []
+
     for i, race_results in enumerate(response.content):
         race_results = race_results.copy()
         race_results["season"] = response.description.loc[i, "season"]
@@ -25,9 +28,32 @@ def get_season_results(year):
     return season_df
 
 
-if __name__ == "__main__":
-    df = get_season_results(2023)
+def get_multiple_seasons(start_year, end_year):
+    """
+    Fetches race results for a range of seasons (inclusive)
+    and combines them into a single DataFrame.
+    """
+    all_seasons = []
 
-    print("Rows:", len(df))
-    print("Columns:", list(df.columns))
-    print(df[["season", "round", "familyName", "position", "points"]].head(10))
+    for year in range(start_year, end_year + 1):
+        print(f"Fetching {year}...")
+        season_df = get_season_results(year)
+        all_seasons.append(season_df)
+        time.sleep(1)
+
+    full_df = pd.concat(all_seasons, ignore_index=True)
+    return full_df
+
+
+if __name__ == "__main__":
+    df = get_multiple_seasons(2018, 2024)
+
+    print("Total rows:", len(df))
+    print("Seasons included:", sorted(df["season"].unique()))
+
+    os.makedirs("data/raw", exist_ok=True)
+
+    output_path = "data/raw/race_results_2018_2024.csv"
+    df.to_csv(output_path, index=False)
+
+    print("Saved to", output_path)
