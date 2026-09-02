@@ -1,4 +1,6 @@
-import fastf1 
+import fastf1
+
+
 def load_race_session(year, grand_prix, session_type="R"):
     """
     Loads an F1 session via FastF1.
@@ -19,6 +21,5 @@ if __name__ == "__main__":
     session = load_race_session(2023, "Bahrain", "R")
 
     print("Session loaded:", session.event["EventName"])
-    print("Number of laps recorded:", len(session.laps)) # session.laps is a Pandas DataFrame with one row per lap, for every driver
-
-    print(session.results[["Abbreviation", "TeamName", "Position"]].head(10)) # session.results is a DataFrame with the final session result
+    print("Number of laps recorded:", len(session.laps))
+    print(session.results[["Abbreviation", "TeamName", "Position"]].head(10))
